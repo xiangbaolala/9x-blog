@@ -35,5 +35,10 @@ jobs:
         endpoint: oss-cn-shanghai.aliyuncs.com
         access-key-id: ${{ secrets.OSS_KEY_ID }}
         access-key-secret: ${{ secrets.OSS_KEY_SECRET }}
-    - name: cp files to aliyun
+    - name: 删除冗余文件
+      run: ossutil rm oss://9x-blog/assets -rf
+      if: github.event_name == 'schedule'
+    - name: 复制文件到阿里云OSS
       run: ossutil cp -rf build/ oss://9x-blog/
+    - name: 设置永久缓存
+      run: ossutil set-meta oss://9x-blog/assets cache-control:"max-age=31536000" --update -rf
